@@ -67,18 +67,20 @@ class GASolver:
         """
         
         ##C: Sort the population##
-        min = self._population[0].fitness
+        """min = self._population[0].fitness
         for i in range(len(self._population)):
             for j in range(len(self._population)-i-1):
                 if   self._population[j].__lt__(self._population[j+1]): ##C: Checking if j individual fits less than j+1 one##
-                    self._population[j], self._population[j+1] = self._population[j+1], self._population ##C: Then swap them if its the case##
+                    self._population[j], self._population[j+1] = self._population[j+1], self._population ##C: Then swap them if its the case##"""
         
+        self._population.sort(reverse=TRUE)
         ##C:Selection##
         popped_out = int(self._selection_rate*len(self._population)) ##C: The number of individual to pop##
         for i in range(popped_out):
             self._population.pop() ##Supressing the last element of the array popped_out times ##
         ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population,
         ## Our first idea is to create an Alpha Male, the fittest individuals will inseminate a certain portion of individual, giving it first half to the 2nd best individuals, then the third etc...##
+        ##We choose to take the two halfs of part because 
         new_born_counter = 0
         while new_born_counter != popped_out:
             for i in (len(self._population)):
@@ -87,21 +89,13 @@ class GASolver:
                         cross_chromosome = [self._population[i].chromosome[0],self._population[i].chromosome[1],self._population[j].chromosome[2],self._population[j].chromosome[3]]
                         ##Mutation##
                         if rd.random() < self._mutation_rate:
-                            cross_chromosome[rd.randint(0,3)] = (mm.get_possible_colors())[rd.randint(0,len(mm.get_possible_colors))-1]
+                            cross_chromosome[rd.randint(0,3)] = rd.choice(mm.get_possible_colors)
                         
                         
                         cross_fitness = MATCH.rate_guess(cross_chromosome)
                         new_cross_individual = Individual(cross_chromosome, cross_fitness)
                         self._population.append(new_cross_individual)
                         new_born_counter += 1
-
-
-
-
-
-
-                
-
         pass  # REPLACE WITH YOUR CODE
 
     def show_generation_summary(self):
@@ -110,6 +104,8 @@ class GASolver:
 
     def get_best_individual(self):
         """ Return the best Individual of the population """
+        self._population.sort(reverse=True)
+        print(self._population[0])
         pass  # REPLACE WITH YOUR CODE
 
     def evolve_until(self, max_nb_of_generations=500, threshold_fitness=None):
@@ -118,4 +114,8 @@ class GASolver:
             - The fitness of the best Individual is greater than or equal to
               threshold_fitness
         """
+        nb_of_generation = 0
+        while self._population[0].fitness < threshold_fitness or nb_of_generation < max_nb_of_generations:
+            self.evolve_for_one_generation()
+
         pass  # REPLACE WITH YOUR CODE
