@@ -8,7 +8,7 @@ Template for exercise 1
 (genetic algorithm module specification)
 """
 
-
+import random as rd
 import mastermind as mm ##C: Importing the mastermind module##
 MATCH = mm.MastermindMatch(secret_size=4) ##C: Selecting the mastermind match to find##
 
@@ -85,6 +85,18 @@ class GASolver:
                 for j in (len(self._population)-i-1):
                     if i != j:
                         cross_chromosome = [self._population[i].chromosome[0],self._population[i].chromosome[1],self._population[j].chromosome[2],self._population[j].chromosome[3]]
+                        ##Mutation##
+                        if rd.random() < self._mutation_rate:
+                            cross_chromosome[rd.randint(0,3)] = (mm.get_possible_colors())[rd.randint(0,len(mm.get_possible_colors))-1]
+                        
+                        
+                        cross_fitness = MATCH.rate_guess(cross_chromosome)
+                        new_cross_individual = Individual(cross_chromosome, cross_fitness)
+                        self._population.append(new_cross_individual)
+                        new_born_counter += 1
+
+
+
 
 
 
