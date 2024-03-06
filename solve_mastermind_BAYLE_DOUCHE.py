@@ -98,7 +98,6 @@ class GASolver:
                         if rd.random() < self._mutation_rate:
                             cross_chromosome[rd.randint(0,3)] = rd.choice(mm.get_possible_colors())
                         
-                        
                         cross_fitness = MATCH.rate_guess(cross_chromosome)
                         new_cross_individual = Individual(cross_chromosome, cross_fitness)
                         self._population.append(new_cross_individual)
