@@ -9,9 +9,7 @@ Template for exercise 1
 """
 
 import random as rd
-import mastermind as mm #Importing the mastermind module
-MATCH = mm.MastermindMatch(secret_size=4) #Selecting the mastermind match to find
-
+import cities as ct #Importing the cities module
 
 class Individual:
     """Represents an Individual for a genetic algorithm"""
@@ -54,8 +52,9 @@ class GASolver:
             pop_size(int, optional): Size of the population. Defaults to 50.
         """
         for i in range(pop_size): #Creating pop_size different individuals
-            chromosome = MATCH.generate_random_guess()
-            fitness = MATCH.rate_guess(chromosome)
+            chromosome = ct.default_road(city_dict)
+            rd.shuffle(chromosome)
+            fitness = - ct.road_length(city_dict, chromosome)
             new_individual = Individual(chromosome, fitness) #Creating a new individual with chromosome and fitness
             self._population.append(new_individual) #Adding it to the population
         pass  
@@ -84,25 +83,45 @@ class GASolver:
         for i in range(popped_out):
             self._population.pop() ##Supressing the last element of the array popped_out times 
         
-        ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population,
-        ## Our first idea is to create an Alpha Male, the fittest individuals will inseminate a certain portion of individual, giving it first half to the 2nd best individuals, then the third etc...##
-        ##We choose to take the two halfs of part because ???
+        ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population
         new_born_counter = 0
         while new_born_counter != popped_out:
             for i in range(len(self._population)):
                 for j in range(len(self._population)-i-1):
                     if i != j and new_born_counter<popped_out:
-                        cross_chromosome = [self._population[i].chromosome[0],self._population[i].chromosome[1],self._population[j].chromosome[2],self._population[j].chromosome[3]]
+                        #Crossover
+                        crossover_point = len(self._population[0].chromosome) // 2
+
+                        #Take the first half from the first parent
+                        cross_chromosome = self._population[i].chromosome[:crossover_point]
+
+                        # Take the second half from the second parent, skipping any cities already present in the child
+                        for city in self._population[j].chromosome[crossover_point:]:
+                            if city not in cross_chromosome:
+                                cross_chromosome.append(city)
                         
+                        # Handle the case where the chromosome size is reduced by crossover
+                        if len(cross_chromosome) < len(self._population[i].chromosome):
+                            possible_cities = ct.default_road(city_dict)
+                            for city in possible_cities:
+                                if city not in cross_chromosome:
+                                    cross_chromosome.append(city)
+ 
                         ##Mutation##
                         if rd.random() < self._mutation_rate:
-                            cross_chromosome[rd.randint(0,3)] = rd.choice(mm.get_possible_colors())
+                            #define randomly the positions of the cities to swap
+                            position1 = rd.randint(0, len(cross_chromosome)-1)
+                            position2 = rd.randint(0, len(cross_chromosome)-1)
+
+                            #swap the cities
+                            temp = cross_chromosome[position1]
+                            cross_chromosome[position1] = cross_chromosome[position2]
+                            cross_chromosome[position2] = temp
                         
-                        cross_fitness = MATCH.rate_guess(cross_chromosome)
+                        cross_fitness = - ct.road_length(city_dict, cross_chromosome)
                         new_cross_individual = Individual(cross_chromosome, cross_fitness)
                         self._population.append(new_cross_individual)
                         new_born_counter += 1
-        #pass  # REPLACE WITH YOUR CODE
 
     def show_generation_summary(self):
         """ Print some debug information on the current state of the population """
@@ -121,18 +140,17 @@ class GASolver:
               threshold_fitness
         """
         nb_of_generation = 0
-        while self._population[0].fitness < threshold_fitness or nb_of_generation < max_nb_of_generations:
+        while (threshold_fitness and self.get_best_individual().fitness < threshold_fitness) or nb_of_generation < max_nb_of_generations:
             self.evolve_for_one_generation()
             nb_of_generation += 1
 
         #pass  # REPLACE WITH YOUR CODE
 
 
-
+city_dict = ct.load_cities('cities.txt') #create the list of cities that is in the text file
 solver = GASolver()
 solver.reset_population()
-solver.evolve_until(threshold_fitness=MATCH.max_score())
+solver.evolve_until()
 
 best = solver.get_best_individual()
-print(f"Best guess {best.chromosome}")
-print(f"Problem solved? {MATCH.is_correct(best.chromosome)}")
+ct.draw_cities(city_dict, best.chromosome)

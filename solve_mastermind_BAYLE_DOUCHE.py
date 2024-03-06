@@ -89,6 +89,7 @@ class GASolver:
         ##We choose to take the two halfs of part because ???
         new_born_counter = 0
         while new_born_counter != popped_out:
+            print(new_born_counter)
             for i in range(len(self._population)):
                 for j in range(len(self._population)-i-1):
                     if i != j and new_born_counter<popped_out:
