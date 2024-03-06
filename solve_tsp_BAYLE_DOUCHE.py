@@ -84,6 +84,7 @@ class GASolver:
             self._population.pop() ##Supressing the last element of the array popped_out times 
         
         ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population
+        #we don't choose our parents randomly, we decide to take the best individuals to generate childs so it's more efficient
         new_born_counter = 0
         while new_born_counter != popped_out:
             for i in range(len(self._population)):
@@ -125,13 +126,16 @@ class GASolver:
 
     def show_generation_summary(self):
         """ Print some debug information on the current state of the population """
-        #pass  # REPLACE WITH YOUR CODE
+        print("Generation summary:")
+        print(f"Current population: {self._population}")
+        print(f"Population size: {len(self._population)}")
+        print(f"Best individual: {self.get_best_individual()}")
+        print(f"Best fitness score: {self.get_best_individual().fitness}")
 
     def get_best_individual(self):
         """ Return the best Individual of the population """
         self._population.sort(reverse=True)
         return (self._population[0])
-        #pass  # REPLACE WITH YOUR CODE
 
     def evolve_until(self, max_nb_of_generations=500, threshold_fitness=None):
         """ Launch the evolve_for_one_generation function until one of the two condition is achieved : 
@@ -144,7 +148,6 @@ class GASolver:
             self.evolve_for_one_generation()
             nb_of_generation += 1
 
-        #pass  # REPLACE WITH YOUR CODE
 
 
 city_dict = ct.load_cities('cities.txt') #create the list of cities that is in the text file

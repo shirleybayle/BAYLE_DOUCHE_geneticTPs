@@ -79,8 +79,8 @@ class GASolver:
             self._population.pop() ##Supressing the last element of the array popped_out times 
         
         ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population,
-        ## Our first idea is to create an Alpha Male, the fittest individuals will inseminate a certain portion of individual, giving it first half to the 2nd best individuals, then the third etc...##
-        ##We choose to take the two halfs of part because ???
+        ##Our best idea is to create an Alpha Male, the fittest individuals will inseminate a certain portion of individual, giving it first half to the 2nd best individuals, then the third etc...##
+        
         new_born_counter = 0
         while new_born_counter != popped_out:
             for i in range(len(self._population)):
@@ -99,6 +99,11 @@ class GASolver:
 
     def show_generation_summary(self):
         """ Print some debug information on the current state of the population """
+        print("Generation summary:")
+        print(f"Current population: {self._population}")
+        print(f"Population size: {len(self._population)}")
+        print(f"Best individual: {self.get_best_individual()}")
+        print(f"Best fitness score: {self.get_best_individual().fitness}")
 
     def get_best_individual(self):
         """ Return the best Individual of the population """
