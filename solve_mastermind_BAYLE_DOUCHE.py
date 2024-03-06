@@ -71,12 +71,6 @@ class GASolver:
         """
         
         #Sort the population
-        """min = self._population[0].fitness
-        for i in range(len(self._population)):
-            for j in range(len(self._population)-i-1):
-                if   self._population[j].__lt__(self._population[j+1]): ##C: Checking if j individual fits less than j+1 one##
-                    self._population[j], self._population[j+1] = self._population[j+1], self._population ##C: Then swap them if its the case##"""
-        
         self._population.sort(reverse=True)
         
         #Selection
@@ -89,7 +83,6 @@ class GASolver:
         ##We choose to take the two halfs of part because ???
         new_born_counter = 0
         while new_born_counter != popped_out:
-            print(new_born_counter)
             for i in range(len(self._population)):
                 for j in range(len(self._population)-i-1):
                     if i != j and new_born_counter<popped_out:
@@ -103,17 +96,14 @@ class GASolver:
                         new_cross_individual = Individual(cross_chromosome, cross_fitness)
                         self._population.append(new_cross_individual)
                         new_born_counter += 1
-        #pass  # REPLACE WITH YOUR CODE
 
     def show_generation_summary(self):
         """ Print some debug information on the current state of the population """
-        #pass  # REPLACE WITH YOUR CODE
 
     def get_best_individual(self):
         """ Return the best Individual of the population """
         self._population.sort(reverse=True)
         return (self._population[0])
-        #pass  # REPLACE WITH YOUR CODE
 
     def evolve_until(self, max_nb_of_generations=500, threshold_fitness=None):
         """ Launch the evolve_for_one_generation function until one of the two condition is achieved : 
@@ -126,7 +116,6 @@ class GASolver:
             self.evolve_for_one_generation()
             nb_of_generation += 1
 
-        #pass  # REPLACE WITH YOUR CODE
 
 
 

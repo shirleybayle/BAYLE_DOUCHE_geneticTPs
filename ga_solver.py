@@ -7,6 +7,7 @@ Created on Thu Feb 18 2022
 Template file for your Exercise 3 submission 
 (generic genetic algorithm module)
 """
+import random as rd
 
 
 class Individual:
@@ -35,7 +36,25 @@ class Individual:
 
 class GAProblem:
     """Defines a Genetic algorithm problem to be solved by ga_solver"""
-    pass  # REPLACE WITH YOUR CODE
+    def __init__(self):
+        """Initiates the problem (add any argument useful for your specific problem)"""
+        pass
+    
+    def compute_fitness(self, chrom):
+       """Computes the fitness of a chromosome given"""
+       pass
+
+    def generate_chromosome(self):
+        """Generates a chromosome"""
+        pass
+    
+    def generate_crossed_chromosome(self, parent1, parent2):
+        """Generates a child chromosome from two parents"""
+        pass
+        
+    def generate_mutant(self, chromosome):
+        """Generates a mutation for the chromosome given"""
+        pass
 
 
 class GASolver:
@@ -54,7 +73,12 @@ class GASolver:
 
     def reset_population(self, pop_size=50):
         """ Initialize the population with pop_size random Individuals """
-        pass  # REPLACE WITH YOUR CODE
+        for i in range(pop_size): #Creating pop_size different individuals
+            chromosome = self._problem.generate_chromosome()
+            fitness = self._problem.compute_fitness(chromosome)
+            new_individual = Individual(chromosome, fitness) #Creating a new individual with chromosome and fitness
+            self._population.append(new_individual) #Adding it to the population
+        pass
 
     def evolve_for_one_generation(self):
         """ Apply the process for one generation : 
@@ -66,7 +90,33 @@ class GASolver:
                 mutation_rate i.e., mutate it if a random value is below   
                 mutation_rate
         """
-        pass  # REPLACE WITH YOUR CODE
+        #Sort the population
+        self._population.sort(reverse=True)
+        
+        #Selection
+        popped_out = int(self._selection_rate*len(self._population)) #The number of individual to pop
+        for i in range(popped_out):
+            self._population.pop() ##Supressing the last element of the array popped_out times 
+        
+        ##Reproduction: we need to create popped_out new elements that are merge of fittest individuals in the population,
+        ## Our first idea is to create an Alpha Male, the fittest individuals will inseminate a certain portion of individual, giving it first half to the 2nd best individuals, then the third etc...##
+        ##We choose to take the two halfs of part because ???
+        new_born_counter = 0
+        while new_born_counter != popped_out:
+            for i in range(len(self._population)):
+                for j in range(len(self._population)-i-1):
+                    if i != j and new_born_counter<popped_out:
+                        #Reproduction
+                        cross_chromosome = self._problem.generate_crossed_chromosome(self._population[i].chromosome, self._population[j].chromosome)
+                        
+                        ##Mutation##
+                        if rd.random() < self._mutation_rate:
+                            cross_chromosome = self._problem.generate_mutant(cross_chromosome)
+                        
+                        cross_fitness = self._problem.compute_fitness(cross_chromosome)
+                        new_cross_individual = Individual(cross_chromosome, cross_fitness)
+                        self._population.append(new_cross_individual)
+                        new_born_counter += 1
 
     def show_generation_summary(self):
         """ Print some debug information on the current state of the population """
@@ -74,7 +124,8 @@ class GASolver:
 
     def get_best_individual(self):
         """ Return the best Individual of the population """
-        pass  # REPLACE WITH YOUR CODE
+        self._population.sort(reverse=True)
+        return (self._population[0])
 
     def evolve_until(self, max_nb_of_generations=500, threshold_fitness=None):
         """ Launch the evolve_for_one_generation function until one of the two condition is achieved : 
@@ -82,4 +133,7 @@ class GASolver:
             - The fitness of the best Individual is greater than or equal to
               threshold_fitness
         """
-        pass  # REPLACE WITH YOUR CODE
+        nb_of_generation = 0
+        while (threshold_fitness and self.get_best_individual().fitness < threshold_fitness) or nb_of_generation < max_nb_of_generations:
+            self.evolve_for_one_generation()
+            nb_of_generation += 1
